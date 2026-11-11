@@ -2,481 +2,1046 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Josh & Gabby: The Journey</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Pokémon Red: Josh & Gabby Version</title>
+  <!-- Retro 8-bit Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --gbc-darkest: #0f380f;
+      --gbc-dark: #306230;
+      --gbc-light: #8bac0f;
+      --gbc-lightest: #9bbc0f;
+      --case-red: #c02626;
+      --case-red-dark: #8c1313;
+      --ui-border: #2b2b2b;
+      --gold: #f59e0b;
+      --pink: #ec4899;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: 'Outfit', sans-serif;
-      background: radial-gradient(circle at top, #1e1b4b, #0f172a, #030712);
-      color: #f8fafc;
-      overflow-x: hidden;
+      background: #111827;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Press Start 2P', monospace, sans-serif;
+      padding: 10px;
+      color: #fff;
     }
-    .font-serif-custom { font-family: 'Playfair Display', serif; }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.07);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+
+    /* Game Boy Shell Outer Case */
+    .gameboy-device {
+      background: linear-gradient(145deg, #dc2626, #991b1b);
+      width: 100%;
+      max-width: 440px;
+      border-radius: 24px 24px 50px 24px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.7), inset 0 3px 6px rgba(255,255,255,0.3);
+      padding: 20px 18px 28px 18px;
+      position: relative;
+      border-bottom: 8px solid #7f1d1d;
     }
-    .pulse-glow {
-      box-shadow: 0 0 25px rgba(244, 63, 94, 0.45);
+
+    /* Top Curved Accent Lines */
+    .gb-accents {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 0 8px;
     }
-    .story-transition {
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .gb-label {
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #fca5a5;
+      font-weight: bold;
+    }
+    .power-led {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #4ade80;
+    }
+
+    /* Screen Bezel */
+    .screen-bezel {
+      background: #374151;
+      border-radius: 12px 12px 35px 12px;
+      padding: 14px;
+      box-shadow: inset 0 4px 8px rgba(0,0,0,0.6);
+      border: 3px solid #1f2937;
+    }
+
+    /* Retro LCD Screen */
+    .screen-lcd {
+      background: #8bac0f;
+      border: 3px solid #0f380f;
+      border-radius: 6px;
+      height: 380px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: inset 0 0 16px rgba(15, 56, 15, 0.4);
+    }
+
+    /* Scanline overlay */
+    .screen-lcd::after {
+      content: " ";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%);
+      background-size: 100% 3px;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* Screen Views */
+    .view {
+      display: none;
+      height: 100%;
+      width: 100%;
+      flex-direction: column;
+      position: relative;
+      z-index: 10;
+    }
+    .view.active {
+      display: flex;
+    }
+
+    /* Title Screen */
+    #title-view {
+      align-items: center;
+      justify-content: space-around;
+      text-align: center;
+      padding: 20px 10px;
+      color: #0f380f;
+    }
+    .title-logo {
+      font-size: 16px;
+      line-height: 1.4;
+      text-shadow: 2px 2px #9bbc0f;
+      animation: pulse 1.8s infinite;
+    }
+    .edition-tag {
+      background: #0f380f;
+      color: #9bbc0f;
+      padding: 4px 8px;
+      font-size: 9px;
+      margin-top: 5px;
+      display: inline-block;
+    }
+    .pixel-couple-preview {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin: 15px 0;
+    }
+
+    /* Level Hub Map View */
+    #hub-view {
+      padding: 10px;
+      color: #0f380f;
+    }
+    .hub-header {
+      font-size: 8px;
+      text-align: center;
+      border-bottom: 2px dashed #0f380f;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      overflow-y: auto;
+      max-height: 290px;
+      padding-right: 2px;
+    }
+    .chapter-card {
+      background: #9bbc0f;
+      border: 2px solid #0f380f;
+      padding: 7px;
+      font-size: 7.5px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s;
+    }
+    .chapter-card.selected {
+      background: #0f380f;
+      color: #9bbc0f;
+      transform: translateX(4px);
+    }
+    .badge-icon {
+      font-size: 11px;
+    }
+
+    /* Story / Battle Stage View */
+    #story-view {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+    .battle-scene {
+      height: 215px;
+      position: relative;
+      background: #9bbc0f;
+      border-bottom: 3px solid #0f380f;
+      overflow: hidden;
+    }
+
+    /* Sprites & Cutscenes */
+    .sprite {
+      position: absolute;
+      image-rendering: pixelated;
+      transition: transform 0.3s ease;
+    }
+    .gabby-sprite {
+      top: 15px;
+      right: 20px;
+      width: 64px;
+      height: 64px;
+    }
+    .josh-sprite {
+      bottom: 20px;
+      left: 20px;
+      width: 64px;
+      height: 64px;
+    }
+    .heart-float {
+      position: absolute;
+      color: #dc2626;
+      font-size: 14px;
+      animation: floatUp 1.2s infinite;
+    }
+
+    /* Dialogue Box */
+    .dialogue-box {
+      background: #ffffff;
+      border: 4px solid #0f380f;
+      border-radius: 4px;
+      margin: 6px;
+      padding: 10px;
+      color: #000;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 2px 2px 0px #0f380f;
+    }
+    .dialogue-author {
+      font-size: 8px;
+      color: #6b7280;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .dialogue-text {
+      font-size: 8.5px;
+      line-height: 1.5;
+      color: #111;
+      min-height: 65px;
+      word-break: break-word;
+    }
+    .dialogue-next {
+      align-self: flex-end;
+      font-size: 8px;
+      animation: blink 0.9s infinite;
+      color: #dc2626;
+    }
+
+    /* Physical Controls Section */
+    .controls-zone {
+      margin-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    /* D-PAD */
+    .d-pad {
+      width: 110px;
+      height: 110px;
+      position: relative;
+    }
+    .d-btn {
+      position: absolute;
+      background: #1f2937;
+      border: 2px solid #111827;
+      border-radius: 4px;
+      box-shadow: 0 4px #000;
+      active: translateY(2px);
+    }
+    .d-btn:active, .d-btn.pressed {
+      transform: translateY(2px);
+      box-shadow: 0 1px #000;
+      background: #374151;
+    }
+    .d-up { top: 0; left: 37px; width: 36px; height: 38px; }
+    .d-down { bottom: 0; left: 37px; width: 36px; height: 38px; }
+    .d-left { top: 37px; left: 0; width: 38px; height: 36px; }
+    .d-right { top: 37px; right: 0; width: 38px; height: 36px; }
+    .d-center {
+      position: absolute;
+      top: 37px;
+      left: 37px;
+      width: 36px;
+      height: 36px;
+      background: #1f2937;
+    }
+
+    /* Action Buttons (A & B) */
+    .action-group {
+      display: flex;
+      gap: 16px;
+      transform: rotate(-22deg);
+      margin-top: -10px;
+    }
+    .action-btn-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .round-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #7f1d1d;
+      border: 2px solid #450a0a;
+      box-shadow: 0 4px #300606;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fca5a5;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .round-btn:active, .round-btn.pressed {
+      transform: translateY(3px);
+      box-shadow: 0 1px #300606;
+      background: #991b1b;
+    }
+    .btn-label {
+      font-size: 7px;
+      color: #fecaca;
+      font-weight: bold;
+    }
+
+    /* Start / Select Buttons */
+    .pill-controls {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 15px;
+    }
+    .pill-btn-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .pill-btn {
+      width: 45px;
+      height: 12px;
+      background: #475569;
+      border-radius: 10px;
+      transform: rotate(-25deg);
+      border: 1px solid #1e293b;
+      box-shadow: 0 2px #0f172a;
+      cursor: pointer;
+    }
+    .pill-btn:active {
+      transform: rotate(-25deg) translateY(1px);
+      box-shadow: 0 0px #0f172a;
+    }
+    .pill-label {
+      font-size: 7px;
+      color: #94a3b8;
+      letter-spacing: 1px;
+    }
+
+    /* Ending Confetti/Heart FX */
+    .heart-burst {
+      position: absolute;
+      pointer-events: none;
+      font-size: 16px;
+      animation: explode 1s forwards ease-out;
+    }
+
+    /* Keyframe Animations */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-30px); opacity: 0; }
+    }
+    @keyframes explode {
+      0% { transform: scale(0.3) translate(0, 0); opacity: 1; }
+      100% { transform: scale(1.6) translate(var(--dx), var(--dy)); opacity: 0; }
+    }
+    @keyframes bounceSprite {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .bounce {
+      animation: bounceSprite 0.6s infinite;
     }
   </style>
 </head>
-<body class="min-h-screen relative flex flex-col items-center justify-center p-4">
+<body>
 
-  <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+  <!-- Game Boy Device Outer Structure -->
+  <div class="gameboy-device">
+    
+    <!-- Top Accents & Status Light -->
+    <div class="gb-accents">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <div class="power-led" id="powerLed"></div>
+        <span class="gb-label">BATTERY</span>
+      </div>
+      <span class="gb-label">JOSH & GABBY SPECIAL</span>
+    </div>
+
+    <!-- Screen Bezel -->
+    <div class="screen-bezel">
+      <div class="screen-lcd" id="screenLcd">
+
+        <!-- 1. TITLE VIEW -->
+        <div id="title-view" class="view active">
+          <div>
+            <div class="edition-tag">SPECIAL 6-YEAR EDITION</div>
+            <div class="title-logo" style="margin-top:8px;">POKÉMON<br><span style="color:#dc2626;">RED: LOVE</span></div>
+            <p style="font-size: 6px; margin-top: 6px; color:#306230;">(Official 4-Year Badge Arc)</p>
+          </div>
+
+          <div class="pixel-couple-preview">
+            <!-- Josh 8-bit Canvas -->
+            <canvas id="joshTitleCanvas" width="56" height="56"></canvas>
+            <span style="font-size:14px; color:#dc2626;">♥</span>
+            <!-- Gabby 8-bit Canvas -->
+            <canvas id="gabbyTitleCanvas" width="56" height="56"></canvas>
+          </div>
+
+          <div>
+            <p style="font-size: 7.5px; animation: blink 0.9s infinite; margin-bottom: 8px;">PRESS START / A</p>
+            <p style="font-size: 6px; color:#306230;">A Journey From Winnipeg to TVIS & NY</p>
+          </div>
+        </div>
+
+        <!-- 2. CHAPTER HUB / BADGE SELECTION -->
+        <div id="hub-view" class="view">
+          <div class="hub-header">
+            SELECT MEMORY CHAPTER<br>
+            <span style="font-size:6px; color:#306230;">USE D-PAD & PRESS A</span>
+          </div>
+          <div class="chapter-list" id="chapterListContainer">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- 3. STORY STAGE / BATTLE VIEW -->
+        <div id="story-view" class="view">
+          <div class="battle-scene" id="battleScene">
+            <!-- Environmental Badge / Scene Description Banner -->
+            <div id="sceneBanner" style="position:absolute; top:6px; left:8px; font-size:6.5px; color:#0f380f; background:#8bac0f; padding:3px 6px; border:1px solid #0f380f;">
+              ROUTE 1: TVIS ASSEMBLY
+            </div>
+
+            <!-- Heart Effect Container -->
+            <div id="heartFxZone" style="position:absolute; inset:0; pointer-events:none;"></div>
+
+            <!-- Gabby Opponent / Encounter -->
+            <div class="sprite gabby-sprite" id="gabbySpriteWrap">
+              <canvas id="stageGabbyCanvas" width="64" height="64"></canvas>
+              <div style="font-size:6.5px; color:#0f380f; text-align:center; font-weight:bold; margin-top:2px;">GABBY Lv.19</div>
+            </div>
+
+            <!-- Josh Player / Encounter -->
+            <div class="sprite josh-sprite" id="joshSpriteWrap">
+              <canvas id="stageJoshCanvas" width="64" height="64"></canvas>
+              <div style="font-size:6.5px; color:#0f380f; text-align:center; font-weight:bold; margin-top:2px;">JOSH Lv.19</div>
+            </div>
+          </div>
+
+          <!-- Dialogue Box -->
+          <div class="dialogue-box">
+            <div>
+              <div class="dialogue-author" id="dialogueAuthor">NARRATOR</div>
+              <div class="dialogue-text" id="dialogueText">...</div>
+            </div>
+            <div class="dialogue-next" id="dialoguePrompt">▼ A: NEXT</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Physical Hardware Controls for Mobile Game Experience -->
+    <div class="controls-zone">
+      <!-- D-Pad -->
+      <div class="d-pad">
+        <button class="d-btn d-up" id="btnUp" aria-label="Up"></button>
+        <button class="d-btn d-down" id="btnDown" aria-label="Down"></button>
+        <button class="d-btn d-left" id="btnLeft" aria-label="Left"></button>
+        <button class="d-btn d-right" id="btnRight" aria-label="Right"></button>
+        <div class="d-center"></div>
+      </div>
+
+      <!-- Action Buttons A & B -->
+      <div class="action-group">
+        <div class="action-btn-wrap">
+          <button class="round-btn" id="btnB">B</button>
+          <span class="btn-label">BACK</span>
+        </div>
+        <div class="action-btn-wrap">
+          <button class="round-btn" id="btnA">A</button>
+          <span class="btn-label">SELECT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Start / Select -->
+    <div class="pill-controls">
+      <div class="pill-btn-wrap">
+        <button class="pill-btn" id="btnSelect"></button>
+        <span class="pill-label">SELECT</span>
+      </div>
+      <div class="pill-btn-wrap">
+        <button class="pill-btn" id="btnStart"></button>
+        <span class="pill-label">START</span>
+      </div>
+    </div>
+
+  </div>
 
   <script>
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playChime(freq = 520, type = 'sine', duration = 0.2) {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
+    /* =====================================================================
+       1. WEB AUDIO API SYNTHESIZER (8-BIT RETRO CHIPTUNE SOUND EFFECTS)
+       ===================================================================== */
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
     }
-  </script>
 
-  <main class="w-full max-w-xl z-10 my-4">
+    function playBeep(freq = 440, type = "square", duration = 0.08, vol = 0.1) {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch(e) {}
+    }
 
-    <!-- SCREEN 1: LANDING -->
-    <section id="screen-landing" class="story-transition glass-card rounded-3xl p-8 sm:p-10 text-center shadow-2xl relative">
-      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold tracking-wider uppercase mb-5">
-        <span>✨ 6 Years in Truth • 4 Years Official</span>
-      </div>
+    function playSelectSound() {
+      initAudio();
+      playBeep(620, "square", 0.06, 0.1);
+      setTimeout(() => playBeep(880, "square", 0.09, 0.12), 40);
+    }
 
-      <h1 class="font-serif-custom text-4xl sm:text-5xl font-bold tracking-tight text-white mb-3">
-        Josh & <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-pink-300">Gabby</span>
-      </h1>
+    function playTextTick() {
+      initAudio();
+      playBeep(340 + Math.random() * 80, "triangle", 0.02, 0.04);
+    }
 
-      <p class="text-slate-300 text-sm leading-relaxed max-w-sm mx-auto mb-8 font-light">
-        From an assembly hall in Kerala to Winnipeg and Rockland County. Retrace the memories that brought us to 2026.
-      </p>
-
-      <button onclick="startGame()" class="px-8 py-3.5 font-semibold text-white bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl pulse-glow hover:scale-105 active:scale-95 transition-all text-sm">
-        Start Our Story ❤️
-      </button>
-
-      <p class="text-[10px] text-slate-500 mt-6 tracking-widest uppercase font-mono">For Gabriela George • From Josh</p>
-    </section>
-
-    <!-- SCREEN 2: TIMELINE MAP -->
-    <section id="screen-map" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
-        <div>
-          <h2 class="font-serif-custom text-xl font-bold text-white">Our Milestones</h2>
-          <p class="text-[11px] text-rose-300">Unlock chapters one by one</p>
-        </div>
-        <div class="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-xl text-xs font-mono">
-          <span class="text-rose-400">❤️</span>
-          <span id="progress-indicator">1 / 5</span>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <button id="node-1" onclick="openLevel(1)" class="w-full text-left p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center justify-center font-bold text-xs">1</span>
-            <div>
-              <h4 class="font-bold text-white text-xs sm:text-sm">The TVIS Assembly</h4>
-              <p class="text-[11px] text-slate-400">Kerala • White shirts & gray collars</p>
-            </div>
-          </div>
-          <span id="badge-1" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">Play</span>
-        </button>
-
-        <button id="node-2" onclick="openLevel(2)" disabled class="w-full text-left p-3.5 rounded-2xl bg-white/5 opacity-50 border border-white/5 transition-all flex items-center justify-between cursor-not-allowed">
-          <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 border border-slate-700 flex items-center justify-center font-bold text-xs">2</span>
-            <div>
-              <h4 class="font-bold text-white text-xs sm:text-sm">Winnipeg & The Mutuals</h4>
-              <p class="text-[11px] text-slate-400">Grade 9 • "Hey you go to TVIS?"</p>
-            </div>
-          </div>
-          <span id="badge-2" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">Locked 🔒</span>
-        </button>
-
-        <button id="node-3" onclick="openLevel(3)" disabled class="w-full text-left p-3.5 rounded-2xl bg-white/5 opacity-50 border border-white/5 transition-all flex items-center justify-between cursor-not-allowed">
-          <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 border border-slate-700 flex items-center justify-center font-bold text-xs">3</span>
-            <div>
-              <h4 class="font-bold text-white text-xs sm:text-sm">The "Situationship"</h4>
-              <p class="text-[11px] text-slate-400">Platonic shock & the 3rd-day resurrection</p>
-            </div>
-          </div>
-          <span id="badge-3" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">Locked 🔒</span>
-        </button>
-
-        <button id="node-4" onclick="openLevel(4)" disabled class="w-full text-left p-3.5 rounded-2xl bg-white/5 opacity-50 border border-white/5 transition-all flex items-center justify-between cursor-not-allowed">
-          <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 border border-slate-700 flex items-center justify-center font-bold text-xs">4</span>
-            <div>
-              <h4 class="font-bold text-white text-xs sm:text-sm">Distance & Devotion</h4>
-              <p class="text-[11px] text-slate-400">Fights, calls, and childhood prayers</p>
-            </div>
-          </div>
-          <span id="badge-4" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">Locked 🔒</span>
-        </button>
-
-        <button id="node-5" onclick="openLevel(5)" disabled class="w-full text-left p-3.5 rounded-2xl bg-white/5 opacity-50 border border-white/5 transition-all flex items-center justify-between cursor-not-allowed">
-          <div class="flex items-center gap-3">
-            <span class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 border border-slate-700 flex items-center justify-center font-bold text-xs">5</span>
-            <div>
-              <h4 class="font-bold text-white text-xs sm:text-sm">2026: Finally Us</h4>
-              <p class="text-[11px] text-slate-400">Turning 20 • Real couple life</p>
-            </div>
-          </div>
-          <span id="badge-5" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">Locked 🔒</span>
-        </button>
-      </div>
-    </section>
-
-    <!-- LEVEL 1 -->
-    <section id="level-1" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
-        <span>CHAPTER 1</span>
-        <span>THE VILLAGE INTERNATIONAL SCHOOL</span>
-      </div>
-      <h3 class="font-serif-custom text-2xl font-bold text-white mb-2">The Angelic Accent</h3>
-      <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
-        I had to sit back in Grade 6 while you went into Grade 7. At assembly, with the 12th graders towering over everyone, that American voice cut through the air—and I fell right there.
-      </p>
-
-      <div class="bg-black/30 border border-white/10 rounded-2xl p-5 text-center mb-5">
-        <p class="text-[11px] font-mono text-rose-300 mb-3">Tap all 4 tall students blocking Josh's line of sight!</p>
-        <div class="relative h-36 bg-slate-900/80 rounded-xl overflow-hidden flex items-center justify-center border border-white/5">
-          <button onclick="dismissCrowd(this)" class="absolute left-4 px-2.5 py-6 bg-slate-700 text-slate-300 text-[10px] rounded-lg border border-slate-600 active:scale-95">12th Grader</button>
-          <button onclick="dismissCrowd(this)" class="absolute left-20 px-3 py-8 bg-slate-700 text-slate-300 text-[10px] rounded-lg border border-slate-600 active:scale-95">12th Grader</button>
-          <button onclick="dismissCrowd(this)" class="absolute right-20 px-3 py-7 bg-slate-700 text-slate-300 text-[10px] rounded-lg border border-slate-600 active:scale-95">12th Grader</button>
-          <button onclick="dismissCrowd(this)" class="absolute right-4 px-2.5 py-6 bg-slate-700 text-slate-300 text-[10px] rounded-lg border border-slate-600 active:scale-95">12th Grader</button>
-          <div id="gabby-revealed" class="hidden flex-col items-center">
-            <span class="text-3xl">✨ 👩🏻 ✨</span>
-            <span class="text-[11px] text-rose-300 font-bold mt-1">Gabby Spotted!</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex justify-between items-center">
-        <button onclick="returnToMap()" class="text-xs text-slate-400 hover:text-white">← Map</button>
-        <button id="btn-next-1" onclick="completeLevel(1)" disabled class="px-5 py-2 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed transition-all">Next Chapter →</button>
-      </div>
-    </section>
-
-    <!-- LEVEL 2 -->
-    <section id="level-2" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
-        <span>CHAPTER 2</span>
-        <span>GRADE 9 • WINNIPEG</span>
-      </div>
-      <h3 class="font-serif-custom text-2xl font-bold text-white mb-2">Finding You Again</h3>
-      <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
-        COVID pushed me back to Canada. I was growing up, losing weight, living my life—until you popped right into my head. I hunted through mutual connections and sent the message.
-      </p>
-
-      <div class="bg-black/30 border border-white/10 rounded-2xl p-5 mb-5 text-center">
-        <p class="text-[11px] font-mono text-rose-300 mb-3">Type the message that broke the silence (mention TVIS):</p>
-        <div class="relative max-w-sm mx-auto">
-          <input id="dm-input" type="text" placeholder="e.g. Hey you go to TVIS..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 font-mono" />
-          <button onclick="checkDM()" class="absolute right-1.5 top-1.5 px-3 py-1.5 bg-rose-500 hover:bg-rose-600 rounded-lg text-xs font-bold transition-colors">Send</button>
-        </div>
-        <p id="dm-feedback" class="text-[11px] mt-2 text-slate-400"></p>
-      </div>
-
-      <div class="flex justify-between items-center">
-        <button onclick="returnToMap()" class="text-xs text-slate-400 hover:text-white">← Map</button>
-        <button id="btn-next-2" onclick="completeLevel(2)" disabled class="px-5 py-2 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed transition-all">Next Chapter →</button>
-      </div>
-    </section>
-
-    <!-- LEVEL 3 -->
-    <section id="level-3" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
-        <span>CHAPTER 3</span>
-        <span>THE 3-DAY MIRACLE</span>
-      </div>
-      <h3 class="font-serif-custom text-2xl font-bold text-white mb-2">The "Situationship"</h3>
-      <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
-        The first time I ever heard the word "situationship" was from you. Then came the "it's platonic" talk. I took 3 days away, and just like that, you rose right back into my life.
-      </p>
-
-      <div class="bg-black/30 border border-white/10 rounded-2xl p-5 text-center mb-5">
-        <p class="text-[11px] font-mono text-rose-300 mb-3">Tap to count through the 3 days of heartbreak:</p>
-        <div class="flex items-center justify-center gap-3 my-4">
-          <div id="day-1-box" class="w-14 h-16 rounded-xl bg-slate-800 border border-white/10 flex flex-col items-center justify-center text-xs">
-            <span class="text-[10px] text-slate-400">Day</span><span class="font-bold text-base">1</span>
-          </div>
-          <div id="day-2-box" class="w-14 h-16 rounded-xl bg-slate-800 border border-white/10 flex flex-col items-center justify-center text-xs">
-            <span class="text-[10px] text-slate-400">Day</span><span class="font-bold text-base">2</span>
-          </div>
-          <div id="day-3-box" class="w-14 h-16 rounded-xl bg-slate-800 border border-white/10 flex flex-col items-center justify-center text-xs">
-            <span class="text-[10px] text-slate-400">Day</span><span class="font-bold text-base">3</span>
-          </div>
-        </div>
-        <button id="day-btn" onclick="tickDay()" class="px-4 py-2 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-xl font-bold text-xs hover:bg-rose-500/30">Wait 1 Day ⏳</button>
-        <p id="resurrection-text" class="text-xs text-rose-300 font-semibold mt-3 hidden">She rose again! We became official. ❤️</p>
-      </div>
-
-      <div class="flex justify-between items-center">
-        <button onclick="returnToMap()" class="text-xs text-slate-400 hover:text-white">← Map</button>
-        <button id="btn-next-3" onclick="completeLevel(3)" disabled class="px-5 py-2 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed transition-all">Next Chapter →</button>
-      </div>
-    </section>
-
-    <!-- LEVEL 4 -->
-    <section id="level-4" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
-        <span>CHAPTER 4</span>
-        <span>ACROSS THE MILES</span>
-      </div>
-      <h3 class="font-serif-custom text-2xl font-bold text-white mb-2">Manitoba ↔ Rockland County</h3>
-      <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
-        Arguments, timezone gaps, bad days, and good days. Long distance tested us, but the bond refused to break.
-      </p>
-
-      <div class="bg-black/30 border border-white/10 rounded-2xl p-5 mb-5 text-center">
-        <p class="text-[11px] font-mono text-rose-300 mb-3">Tap to fill the bond meter past the distance:</p>
-        <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden border border-white/10 p-0.5 mb-4">
-          <div id="bond-bar" class="h-full bg-gradient-to-r from-rose-500 to-pink-400 rounded-full transition-all duration-150" style="width: 25%;"></div>
-        </div>
-        <button onclick="boostBond()" class="px-5 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 rounded-xl font-bold text-xs pulse-glow hover:scale-105 active:scale-95 transition-transform">
-          Hold On To Gabby ❤️
-        </button>
-      </div>
-
-      <div class="flex justify-between items-center">
-        <button onclick="returnToMap()" class="text-xs text-slate-400 hover:text-white">← Map</button>
-        <button id="btn-next-4" onclick="completeLevel(4)" disabled class="px-5 py-2 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed transition-all">Next Chapter →</button>
-      </div>
-    </section>
-
-    <!-- LEVEL 5 -->
-    <section id="level-5" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
-        <span>FINALE</span>
-        <span>YEAR 2026 • TURNING 20</span>
-      </div>
-      <h3 class="font-serif-custom text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-300 to-amber-200 mb-3">
-        Finally Us.
-      </h3>
-
-      <div class="space-y-3 text-slate-200 text-xs sm:text-sm leading-relaxed mb-6">
-        <p>
-          2026 has been our wildest, happiest chapter. We finally got to see each other so much and just exist as a normal couple.
-        </p>
-        <p>
-          Our families are close now. Everything that kid in Kerala prayed for in church came true.
-        </p>
-      </div>
-
-      <div class="bg-gradient-to-br from-rose-950/40 to-purple-950/40 border border-rose-500/30 rounded-2xl p-5 text-center relative mb-6">
-        <div class="text-3xl mb-2">💌</div>
-        <h4 class="font-serif-custom text-lg font-bold text-rose-200 mb-1">To My Gabriela George</h4>
-        <p class="font-serif-custom italic text-slate-300 text-xs sm:text-sm max-w-md mx-auto mb-3">
-          "They say 4 years, but my heart has known you for 6. Happy Anniversary, Gabby. I love you."
-        </p>
-        <p class="text-[11px] font-mono text-rose-400">— Always, Josh Joseph</p>
-      </div>
-
-      <div class="text-center">
-        <button onclick="triggerConfetti()" class="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl font-bold text-xs pulse-glow hover:scale-105 active:scale-95 transition-all">
-          Celebrate With Confetti 🥂🎉
-        </button>
-      </div>
-    </section>
-
-  </main>
-
-  <script>
-    let currentUnlockedLevel = 1;
-    let crowdCleared = 0;
-    let dayCount = 0;
-    let bondProgress = 25;
-
-    function showScreen(id) {
-      ['screen-landing', 'screen-map', 'level-1', 'level-2', 'level-3', 'level-4', 'level-5'].forEach(s => {
-        const el = document.getElementById(s);
-        if (el) el.classList.add('hidden');
+    function playFanfare() {
+      initAudio();
+      const notes = [440, 554, 659, 880];
+      notes.forEach((freq, idx) => {
+        setTimeout(() => playBeep(freq, "square", 0.15, 0.15), idx * 120);
       });
-      const target = document.getElementById(id);
-      if (target) target.classList.remove('hidden');
     }
 
-    function startGame() {
-      playChime(650, 'sine', 0.25);
-      showScreen('screen-map');
+    /* =====================================================================
+       2. RETRO PIXEL ART GENERATORS (CANVAS SPRITES)
+       ===================================================================== */
+    // Helper to draw pixel squares
+    function drawPixel(ctx, x, y, size, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * size, y * size, size, size);
     }
 
-    function returnToMap() {
-      playChime(440, 'triangle', 0.15);
-      showScreen('screen-map');
-    }
+    // Draw 8-bit Josh (Grade 6 -> Winnipeg Guy)
+    function renderJoshSprite(canvasId, mood = "normal") {
+      const c = document.getElementById(canvasId);
+      if (!c) return;
+      const ctx = c.getContext("2d");
+      ctx.clearRect(0,0, c.width, c.height);
+      const s = 4; // pixel block size
 
-    function openLevel(n) {
-      if (n <= currentUnlockedLevel) {
-        playChime(580, 'sine', 0.2);
-        showScreen(`level-${n}`);
-      }
-    }
+      // Hair (Dark Brown)
+      for(let x=4; x<=9; x++) for(let y=1; y<=3; y++) drawPixel(ctx, x, y, s, "#26150b");
+      drawPixel(ctx, 3, 2, s, "#26150b");
+      drawPixel(ctx, 10, 2, s, "#26150b");
 
-    function completeLevel(n) {
-      playChime(880, 'triangle', 0.3);
-      if (n === currentUnlockedLevel && currentUnlockedLevel < 5) {
-        currentUnlockedLevel++;
-        unlockNodeUI(currentUnlockedLevel);
-      }
-      showScreen(`level-${n + 1}`);
-    }
-
-    function unlockNodeUI(lvl) {
-      document.getElementById('progress-indicator').textContent = `${lvl} / 5`;
-      const node = document.getElementById(`node-${lvl}`);
-      const badge = document.getElementById(`badge-${lvl}`);
-      if (node && badge) {
-        node.removeAttribute('disabled');
-        node.classList.remove('opacity-50', 'cursor-not-allowed');
-        node.classList.add('hover:bg-white/10');
-        badge.classList.remove('bg-slate-800', 'text-slate-400');
-        badge.classList.add('bg-rose-500/20', 'text-rose-300', 'border', 'border-rose-500/30');
-        badge.textContent = 'Play';
-      }
-    }
-
-    function dismissCrowd(btn) {
-      playChime(350 + (crowdCleared * 100), 'sine', 0.15);
-      btn.style.opacity = '0';
-      btn.style.pointerEvents = 'none';
-      crowdCleared++;
-      if (crowdCleared >= 4) {
-        document.getElementById('gabby-revealed').classList.remove('hidden');
-        const b = document.getElementById('btn-next-1');
-        b.removeAttribute('disabled');
-        b.className = "px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-xs pulse-glow transition-all";
-      }
-    }
-
-    function checkDM() {
-      const val = document.getElementById('dm-input').value.toLowerCase().trim();
-      const fb = document.getElementById('dm-feedback');
-      if (val.includes('tvis') || val.includes('village')) {
-        playChime(750, 'triangle', 0.25);
-        fb.className = "text-[11px] mt-2 text-emerald-400 font-semibold";
-        fb.textContent = "Delivered! 'OMG yes! Who is this??' ❤️";
-        const b = document.getElementById('btn-next-2');
-        b.removeAttribute('disabled');
-        b.className = "px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-xs pulse-glow transition-all";
+      // Face (Skin tone)
+      for(let x=4; x<=9; x++) for(let y=4; y<=7; y++) drawPixel(ctx, x, y, s, "#e0a370");
+      // Eyes
+      drawPixel(ctx, 5, 5, s, "#111");
+      drawPixel(ctx, 8, 5, s, "#111");
+      // Smile / Expression
+      if (mood === "inLove") {
+        drawPixel(ctx, 6, 7, s, "#b91c1c");
+        drawPixel(ctx, 7, 7, s, "#b91c1c");
+        // Blush
+        drawPixel(ctx, 4, 6, s, "#fca5a5");
+        drawPixel(ctx, 9, 6, s, "#fca5a5");
       } else {
-        playChime(250, 'sawtooth', 0.15);
-        fb.className = "text-[11px] mt-2 text-rose-400";
-        fb.textContent = "Include 'TVIS' in your message!";
+        drawPixel(ctx, 6, 7, s, "#3b2214");
+        drawPixel(ctx, 7, 7, s, "#3b2214");
+      }
+
+      // TVIS Uniform / Red hoodie
+      for(let x=3; x<=10; x++) for(let y=8; y<=11; y++) drawPixel(ctx, x, y, s, "#f8fafc"); // White shirt
+      // Gray Collar
+      drawPixel(ctx, 5, 8, s, "#64748b");
+      drawPixel(ctx, 8, 8, s, "#64748b");
+
+      // Pants (Gray TVIS pants)
+      for(let x=4; x<=9; x++) for(let y=12; y<=14; y++) drawPixel(ctx, x, y, s, "#475569");
+      drawPixel(ctx, 6, 13, s, "#1e293b"); // divide legs
+      drawPixel(ctx, 7, 13, s, "#1e293b");
+    }
+
+    // Draw 8-bit Gabby (New York / TVIS 7th grader girl)
+    function renderGabbySprite(canvasId, mood = "normal") {
+      const c = document.getElementById(canvasId);
+      if (!c) return;
+      const ctx = c.getContext("2d");
+      ctx.clearRect(0,0, c.width, c.height);
+      const s = 4;
+
+      // Long Hair (Flowing dark waves)
+      for(let x=3; x<=10; x++) for(let y=1; y<=4; y++) drawPixel(ctx, x, y, s, "#1f1610");
+      for(let y=4; y<=10; y++) {
+        drawPixel(ctx, 2, y, s, "#1f1610");
+        drawPixel(ctx, 3, y, s, "#1f1610");
+        drawPixel(ctx, 10, y, s, "#1f1610");
+        drawPixel(ctx, 11, y, s, "#1f1610");
+      }
+
+      // Face (Fair tone)
+      for(let x=4; x<=9; x++) for(let y=4; y<=7; y++) drawPixel(ctx, x, y, s, "#fcd3b8");
+      // Pretty Eyes
+      drawPixel(ctx, 5, 5, s, "#0f172a");
+      drawPixel(ctx, 8, 5, s, "#0f172a");
+
+      // Warm Smile
+      drawPixel(ctx, 6, 7, s, "#e11d48");
+      drawPixel(ctx, 7, 7, s, "#e11d48");
+      // Cute blush
+      drawPixel(ctx, 4, 6, s, "#f43f5e");
+      drawPixel(ctx, 9, 6, s, "#f43f5e");
+
+      // TVIS Uniform - White Short-sleeved Shirt
+      for(let x=4; x<=9; x++) for(let y=8; y<=10; y++) drawPixel(ctx, x, y, s, "#ffffff");
+      // Gray Collar
+      drawPixel(ctx, 5, 8, s, "#64748b");
+      drawPixel(ctx, 8, 8, s, "#64748b");
+
+      // TVIS Gray Skirt
+      for(let x=3; x<=10; x++) for(let y=11; y<=13; y++) drawPixel(ctx, x, y, s, "#475569");
+      // Shoes
+      drawPixel(ctx, 4, 14, s, "#000");
+      drawPixel(ctx, 9, 14, s, "#000");
+    }
+
+    /* =====================================================================
+       3. STORYLINE CHAPTER DATA & SCRIPT
+       ===================================================================== */
+    const STORY_CHAPTERS = [
+      {
+        id: 0,
+        title: "STAGE 1: THE TVIS ENCOUNTER",
+        badge: "🌸",
+        location: "KERALA: THE VILLAGE INTL",
+        sceneSummary: "Assemblies, White shirts & Angelic accents",
+        dialogues: [
+          { author: "Josh", text: "Winnipeg to Kerala... I moved from Canada to India and entered The Village International School in Thodupuzha." },
+          { author: "Josh", text: "I wrote the test for 7th grade, but had to sit back in Grade 6. Meanwhile, a girl from Rockland County, New York joined Grade 7." },
+          { author: "Josh", text: "During school assembly, tall 12th graders stood right in front of us 6th graders. I couldn't see anything at all..." },
+          { author: "Narrator", text: "Suddenly, over the speakers, an unmistakable American accent echoed across the morning ground." },
+          { author: "Josh", text: "Her voice sounded like home. An angelic voice. Then I caught a glimpse of her in her TVIS uniform with the gray collar. BOOM. I fell in love right away." },
+          { author: "Josh", text: "I was chubby, fat and super shy back then. But every single Sunday at church, I prayed: 'Jesus, please let her be my girl.'" }
+        ]
+      },
+      {
+        id: 1,
+        title: "STAGE 2: WINNIPEG & MUTUALS",
+        badge: "⚡",
+        location: "WINNIPEG, CANADA (GRADE 9)",
+        sceneSummary: "Lockdown, Glow Up & The Instagram DM",
+        dialogues: [
+          { author: "Narrator", text: "COVID struck the world. Josh relocated all the way back to Winnipeg, Manitoba." },
+          { author: "Josh", text: "In 9th grade, I hit the gym, shed a ton of weight, and got my confidence back. I was talking to girls, living my teenage life." },
+          { author: "Josh", text: "Then one random afternoon, completely out of the blue, Gabby popped into my mind. Out of nowhere." },
+          { author: "Josh", text: "'Wait... my friend's sister's friend is Gabby!' I raced to check Instagram mutuals, and BAM—there was her account!" },
+          { author: "Josh", text: "You have no idea how happy I was. That was hands down the single happiest day of my life." },
+          { author: "Josh", text: "I hit follow and sent the legendary DM: 'Hey, you go to TVIS right?' That little text rekindled our entire universe." }
+        ]
+      },
+      {
+        id: 2,
+        title: "STAGE 3: SITUATIONSHIP WARS",
+        badge: "🔥",
+        location: "WINNIPEG <---> NEW YORK",
+        sceneSummary: "Nicole, 3-Day Departure & Resurrection",
+        dialogues: [
+          { author: "Narrator", text: "Late nights. Non-stop texting. Nicole got involved. Distance was real, but so was the spark." },
+          { author: "Josh", text: "Then Gabby dropped the word: 'We are in a situationship.' It was literally the first time in my life I even heard that word!" },
+          { author: "Josh", text: "She'd say 'I love you', but then one day said: 'It's all platonic.' Man, that broke my soul into pieces." },
+          { author: "Josh", text: "I went completely silent and took a 3-day gap. And just like Jesus Christ on the third day..." },
+          { author: "Josh", text: "Gabriella George rose again in my heart! She came right back, and that was the moment we officially started dating." }
+        ]
+      },
+      {
+        id: 3,
+        title: "STAGE 4: 4 YEARS (6 IN TRUTH)",
+        badge: "🛡️",
+        location: "DISTANCE & BATTLES",
+        sceneSummary: "Arguments, Growth & Enduring Love",
+        dialogues: [
+          { author: "Narrator", text: "Publicly they tell people 'It's been 4 years'. But between them? It's been 6 intense, beautiful years of history." },
+          { author: "Josh", text: "Long-distance relationships aren't for the weak. We've had crazy arguments, heated fights, tears, and bad days." },
+          { author: "Josh", text: "Every uphill had a downhill, but through every single storm, we fought FOR each other, never against each other." },
+          { author: "Gabby", text: "'At the end of the day, no one gets me the way you do, Josh.'" }
+        ]
+      },
+      {
+        id: 4,
+        title: "STAGE 5: 2026 & FOREVER",
+        badge: "👑",
+        location: "PRESENT DAY - TURNING 20",
+        sceneSummary: "Families United, Together & Grateful",
+        dialogues: [
+          { author: "Narrator", text: "CHAMPIONSHIP VICTORY ROAD: Both Josh & Gabby are now 19, turning 20 years old!" },
+          { author: "Josh", text: "2026 has been our craziest year yet. We finally got to see each other so much and just live like a normal couple." },
+          { author: "Josh", text: "Our families know each other closely now. From a chubby boy praying in church in Kerala to standing right beside you today." },
+          { author: "Josh", text: "Gabriella George, thank you for loving me, forgiving me, and choosing me every day. Happy Anniversary, my girl." },
+          { author: "Josh", text: "QUEST COMPLETE: I LOVE YOU FOREVER AND ALWAYS, GABBY! ♥" }
+        ]
+      }
+    ];
+
+    /* =====================================================================
+       4. GAME STATE ENGINE
+       ===================================================================== */
+    let currentView = "title"; // 'title' | 'hub' | 'story'
+    let currentChapterIndex = 0;
+    let currentDialogueIndex = 0;
+    let isTyping = false;
+    let typeTimer = null;
+
+    // DOM Elements
+    const titleView = document.getElementById("title-view");
+    const hubView = document.getElementById("hub-view");
+    const storyView = document.getElementById("story-view");
+    const chapterListContainer = document.getElementById("chapterListContainer");
+    const dialogueAuthor = document.getElementById("dialogueAuthor");
+    const dialogueText = document.getElementById("dialogueText");
+    const dialoguePrompt = document.getElementById("dialoguePrompt");
+    const sceneBanner = document.getElementById("sceneBanner");
+    const heartFxZone = document.getElementById("heartFxZone");
+
+    // Initialize Hub Stage List
+    function populateChapterList() {
+      chapterListContainer.innerHTML = "";
+      STORY_CHAPTERS.forEach((ch, idx) => {
+        const card = document.createElement("div");
+        card.className = `chapter-card ${idx === currentChapterIndex ? 'selected' : ''}`;
+        card.innerHTML = `
+          <div>
+            <div style="font-weight:bold;">${ch.badge} ${ch.title}</div>
+            <div style="font-size:6px; opacity:0.8; margin-top:2px;">${ch.sceneSummary}</div>
+          </div>
+          <div class="badge-icon">▶</div>
+        `;
+        card.onclick = () => {
+          currentChapterIndex = idx;
+          updateChapterListSelection();
+          startStoryStage(idx);
+        };
+        chapterListContainer.appendChild(card);
+      });
+    }
+
+    function updateChapterListSelection() {
+      const cards = chapterListContainer.children;
+      for (let i = 0; i < cards.length; i++) {
+        if (i === currentChapterIndex) {
+          cards[i].classList.add("selected");
+          cards[i].scrollIntoView({ block: 'nearest' });
+        } else {
+          cards[i].classList.remove("selected");
+        }
       }
     }
 
-    function tickDay() {
-      dayCount++;
-      playChime(450 + (dayCount * 120), 'sine', 0.2);
-      if (dayCount <= 3) {
-        const box = document.getElementById(`day-${dayCount}-box`);
-        box.classList.remove('bg-slate-800');
-        box.classList.add('bg-rose-500', 'text-white', 'scale-105');
+    function switchView(viewName) {
+      currentView = viewName;
+      titleView.classList.remove("active");
+      hubView.classList.remove("active");
+      storyView.classList.remove("active");
+
+      if (viewName === "title") titleView.classList.add("active");
+      if (viewName === "hub") {
+        hubView.classList.add("active");
+        populateChapterList();
       }
-      if (dayCount >= 3) {
-        document.getElementById('day-btn').classList.add('hidden');
-        document.getElementById('resurrection-text').classList.remove('hidden');
-        const b = document.getElementById('btn-next-3');
-        b.removeAttribute('disabled');
-        b.className = "px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-xs pulse-glow transition-all";
+      if (viewName === "story") storyView.classList.add("active");
+    }
+
+    /* Start an interactive chapter */
+    function startStoryStage(stageIdx) {
+      currentChapterIndex = stageIdx;
+      currentDialogueIndex = 0;
+      switchView("story");
+
+      const ch = STORY_CHAPTERS[stageIdx];
+      sceneBanner.innerText = `${ch.badge} ${ch.location}`;
+
+      // Mood updates for sprites
+      renderJoshSprite("stageJoshCanvas", stageIdx === 0 ? "inLove" : "normal");
+      renderGabbySprite("stageGabbyCanvas", stageIdx === 4 ? "inLove" : "normal");
+
+      spawnFloatingHeart();
+      displayDialogue();
+    }
+
+    /* Dialogue typewriter effect */
+    function displayDialogue() {
+      const ch = STORY_CHAPTERS[currentChapterIndex];
+      const dialogue = ch.dialogues[currentDialogueIndex];
+      
+      dialogueAuthor.innerText = dialogue.author;
+      dialogueText.innerText = "";
+      isTyping = true;
+      dialoguePrompt.innerText = "▶";
+
+      if (dialogue.author === "Josh") {
+        dialogueAuthor.style.color = "#dc2626";
+      } else if (dialogue.author === "Gabby") {
+        dialogueAuthor.style.color = "#ec4899";
+      } else {
+        dialogueAuthor.style.color = "#4b5563";
+      }
+
+      let charIndex = 0;
+      clearInterval(typeTimer);
+
+      typeTimer = setInterval(() => {
+        if (charIndex < dialogue.text.length) {
+          dialogueText.innerText += dialogue.text[charIndex];
+          if (charIndex % 2 === 0) playTextTick();
+          charIndex++;
+        } else {
+          clearInterval(typeTimer);
+          isTyping = false;
+          dialoguePrompt.innerText = "▼ A: NEXT";
+        }
+      }, 25);
+    }
+
+    /* Advance or Skip Text */
+    function advanceDialogue() {
+      const ch = STORY_CHAPTERS[currentChapterIndex];
+
+      if (isTyping) {
+        // Fast-forward text
+        clearInterval(typeTimer);
+        dialogueText.innerText = ch.dialogues[currentDialogueIndex].text;
+        isTyping = false;
+        dialoguePrompt.innerText = "▼ A: NEXT";
+        return;
+      }
+
+      playSelectSound();
+      currentDialogueIndex++;
+
+      if (currentDialogueIndex < ch.dialogues.length) {
+        displayDialogue();
+        if (Math.random() > 0.4) spawnFloatingHeart();
+      } else {
+        // Stage completed
+        playFanfare();
+        triggerConfettiHearts();
+        
+        if (currentChapterIndex < STORY_CHAPTERS.length - 1) {
+          setTimeout(() => {
+            currentChapterIndex++;
+            startStoryStage(currentChapterIndex);
+          }, 1100);
+        } else {
+          // Finished entire journey
+          setTimeout(() => {
+            switchView("hub");
+          }, 1500);
+        }
       }
     }
 
-    function boostBond() {
-      if (bondProgress < 100) {
-        bondProgress += 25;
-        playChime(400 + (bondProgress * 3), 'sine', 0.1);
-        document.getElementById('bond-bar').style.width = bondProgress + '%';
-      }
-      if (bondProgress >= 100) {
-        const b = document.getElementById('btn-next-4');
-        b.removeAttribute('disabled');
-        b.className = "px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-xs pulse-glow transition-all";
+    /* Visual Particle / Hearts FX */
+    function spawnFloatingHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart-float";
+      heart.innerText = "♥";
+      heart.style.left = `${Math.floor(Math.random() * 80) + 10}%`;
+      heart.style.bottom = "40px";
+      heartFxZone.appendChild(heart);
+      setTimeout(() => heart.remove(), 1200);
+    }
+
+    function triggerConfettiHearts() {
+      for (let i = 0; i < 18; i++) {
+        const h = document.createElement("div");
+        h.className = "heart-burst";
+        h.innerText = Math.random() > 0.5 ? "♥" : "★";
+        h.style.color = Math.random() > 0.5 ? "#ef4444" : "#f59e0b";
+        h.style.left = "50%";
+        h.style.top = "40%";
+        const dx = (Math.random() - 0.5) * 200 + "px";
+        const dy = (Math.random() - 0.5) * 180 + "px";
+        h.style.setProperty("--dx", dx);
+        h.style.setProperty("--dy", dy);
+        heartFxZone.appendChild(h);
+        setTimeout(() => h.remove(), 1000);
       }
     }
 
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let w, h;
-    let particles = [];
-
-    function resize() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    class Particle {
-      constructor() { this.reset(); }
-      reset() {
-        this.x = Math.random() * w;
-        this.y = h + Math.random() * 20;
-        this.speed = 0.5 + Math.random() * 0.8;
-        this.size = 2 + Math.random() * 2.5;
-        this.opacity = 0.1 + Math.random() * 0.3;
-      }
-      update() {
-        this.y -= this.speed;
-        if (this.y < -10) this.reset();
-      }
-      draw() {
-        ctx.fillStyle = `rgba(244, 63, 94, ${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+    /* =====================================================================
+       5. USER INPUT HANDLERS (D-PAD & BUTTONS)
+       ===================================================================== */
+    function handlePressA() {
+      initAudio();
+      playSelectSound();
+      if (currentView === "title") {
+        switchView("hub");
+      } else if (currentView === "hub") {
+        startStoryStage(currentChapterIndex);
+      } else if (currentView === "story") {
+        advanceDialogue();
       }
     }
 
-    for (let i = 0; i < 35; i++) particles.push(new Particle());
-
-    function animate() {
-      ctx.clearRect(0, 0, w, h);
-      particles.forEach(p => { p.update(); p.draw(); });
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    function triggerConfetti() {
-      playChime(880, 'sine', 0.3);
-      for (let i = 0; i < 60; i++) {
-        const heart = document.createElement('div');
-        heart.innerText = ['❤️', '💖', '✨', '🌹', '🥂'][Math.floor(Math.random() * 5)];
-        heart.style.position = 'fixed';
-        heart.style.left = Math.random() * 100 + 'vw';
-        heart.style.top = '-40px';
-        heart.style.fontSize = (16 + Math.random() * 20) + 'px';
-        heart.style.zIndex = '9999';
-        heart.style.pointerEvents = 'none';
-        heart.style.transition = `all ${2 + Math.random() * 2}s cubic-bezier(0.25, 1, 0.5, 1)`;
-        document.body.appendChild(heart);
-
-        setTimeout(() => {
-          heart.style.transform = `translateY(${window.innerHeight + 80}px) rotate(${Math.random() * 360}deg)`;
-          heart.style.opacity = '0';
-        }, 50);
-
-        setTimeout(() => heart.remove(), 4000);
+    function handlePressB() {
+      initAudio();
+      playBeep(240, "square", 0.08);
+      if (currentView === "story") {
+        switchView("hub");
+      } else if (currentView === "hub") {
+        switchView("title");
       }
     }
+
+    function handleUp() {
+      playBeep(400, "sine", 0.04);
+      if (currentView === "hub") {
+        if (currentChapterIndex > 0) {
+          currentChapterIndex--;
+          updateChapterListSelection();
+        }
+      }
+    }
+
+    function handleDown() {
+      playBeep(400, "sine", 0.04);
+      if (currentView === "hub") {
+        if (currentChapterIndex < STORY_CHAPTERS.length - 1) {
+          currentChapterIndex++;
+          updateChapterListSelection();
+        }
+      }
+    }
+
+    // Attach Event Listeners to Screen / Touch Buttons
+    const bindBtn = (id, action) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      
+      const fire = (e) => {
+        e.preventDefault();
+        el.classList.add("pressed");
+        action();
+        setTimeout(() => el.classList.remove("pressed"), 120);
+      };
+
+      el.addEventListener("pointerdown", fire);
+    };
+
+    bindBtn("btnA", handlePressA);
+    bindBtn("btnB", handlePressB);
+    bindBtn("btnStart", handlePressA);
+    bindBtn("btnSelect", handlePressB);
+    bindBtn("btnUp", handleUp);
+    bindBtn("btnDown", handleDown);
+    bindBtn("btnLeft", () => handleUp());
+    bindBtn("btnRight", () => handleDown());
+
+    // Allow screen tap to continue on dialogue
+    document.getElementById("story-view").addEventListener("click", () => {
+      if (currentView === "story") advanceDialogue();
+    });
+
+    // Keyboard support for testing (Arrow Keys, Z/Enter = A, X/Esc = B)
+    window.addEventListener("keydown", (e) => {
+      if (["ArrowUp", "KeyW"].includes(e.code)) handleUp();
+      if (["ArrowDown", "KeyS"].includes(e.code)) handleDown();
+      if (["KeyZ", "Enter", "Space"].includes(e.code)) handlePressA();
+      if (["KeyX", "Escape", "Backspace"].includes(e.code)) handlePressB();
+    });
+
+    /* =====================================================================
+       6. BOOTSTRAP INITIAL SPRITES & RUNTIME
+       ===================================================================== */
+    window.addEventListener("DOMContentLoaded", () => {
+      renderJoshSprite("joshTitleCanvas", "inLove");
+      renderGabbySprite("gabbyTitleCanvas", "inLove");
+      renderJoshSprite("stageJoshCanvas");
+      renderGabbySprite("stageGabbyCanvas");
+      populateChapterList();
+
+      // Battery LED subtle flicker simulation
+      setInterval(() => {
+        const led = document.getElementById("powerLed");
+        if (led) led.style.opacity = (0.85 + Math.random() * 0.15).toFixed(2);
+      }, 400);
+    });
   </script>
 </body>
 </html>
