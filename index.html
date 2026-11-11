@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Josh & Gabby: The Journey</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(circle at top, #1e1b4b, #0f172a, #030712);
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+    .font-serif-custom { font-family: 'Playfair Display', serif; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .pulse-glow {
+      box-shadow: 0 0 25px rgba(244, 63, 94, 0.45);
+    }
+    .story-transition {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="min-h-screen relative flex flex-col items-center justify-center p-4">
+
+  <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playChime(freq = 520, type = 'sine', duration = 0.2) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+  </script>
+
+  <main class="w-full max-w-xl z-10 my-4">
+
+    <!-- SCREEN 1: LANDING -->
+    <section id="screen-landing" class="story-transition glass-card rounded-3xl p-8 sm:p-10 text-center shadow-2xl relative">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold tracking-wider uppercase mb-5">
+        <span>✨ 6 Years in Truth • 4 Years Official</span>
+      </div>
+
+      <h1 class="font-serif-custom text-4xl sm:text-5xl font-bold tracking-tight text-white mb-3">
+        Josh & <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-pink-300">Gabby</span>
+      </h1>
+
+      <p class="text-slate-300 text-sm leading-relaxed max-w-sm mx-auto mb-8 font-light">
+        From an assembly hall in Kerala to Winnipeg and Rockland County. Retrace the memories that brought us to 2026.
+      </p>
+
+      <button onclick="startGame()" class="px-8 py-3.5 font-semibold text-white bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl pulse-glow hover:scale-105 active:scale-95 transition-all text-sm">
+        Start Our Story ❤️
+      </button>
+
+      <p class="text-[10px] text-slate-500 mt-6 tracking-widest uppercase font-mono">For Gabriela George • From Josh</p>
+    </section>
+
+    <!-- SCREEN 2: TIMELINE MAP -->
+    <section id="screen-map" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+        <div>
+          <h2 class="font-serif-custom text-xl font-bold text-white">Our Milestones</h2>
+          <p class="text-[11px] text-rose-300">Unlock chapters one by one</p>
+        </div>
+        <div class="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1 rounded-xl text-xs font-mono">
+          <span class="text-rose-400">❤️</span>
+          <span id="progress-indicator">1 / 5</span>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <button id="node-1" onclick="openLevel(1)" class="w-full text-left p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center justify-center font-bold text-xs">1</span>
+            <div>
+              <h4 class="font-bold text-white text-xs sm:text-sm">The TVIS Assembly</h4>
+              <p class="text-[11px] text-slate-400">Kerala • White shirts & gray collars</p>
+            </div>
+          </div>
+          <span id="badge-1" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">Play</span>
+        </button>
+
+        <button id="node-2" onclick="openLevel(2)" disabled class="w-full text-left p-3.5 rounded-2xl bg-white/5 opacity-50 border border-white/5 transition-all flex items-center justify-between cursor-not-allowed">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 border border-slate-700 flex items-center justify-center font-bold text-xs">2</span>
+            <div>
+              <h4 class="font-bold text-white text-xs sm:text-sm">Winnipeg & The Mutuals</h4>
+              <p class="text-[11px] text-slate-400">Grade 9 • "Hey you go to TVIS?"</p>
+            </div>
+          </div>
+          <span id="badge-2" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">Locked 🔒</span>
+        </button>
+
+        <button id="node-3" onclick="openLevel(3)" disabled class="w-full text-left p-3.5 rounded-2xl bg-white/5 opacity-50 border border-white/5 transition-all flex items-center justify-between cursor-not-allowed">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 border border-slate-700 flex items-center justify-center font-bold text-xs">3</span>
+            <div>
+              <h4 class="font-bold text-white text-xs sm:text-sm">The "Situationship"</h4>
+              <p class="text-[11px] text-slate-400">Platonic shock & the 3rd-day resurrection</p>
+            </div>
+          </div>
+          <span id="badge-3" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">Locked 🔒</span>
+        </button>
+
+        <button id="node-4" onclick="openLevel(4)" disabled class="w-full text-left p-3.5 rounded-2xl bg-white/5 opacity-50 border border-white/5 transition-all flex items-center justify-between cursor-not-allowed">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 border border-slate-700 flex items-center justify-center font-bold text-xs">4</span>
+            <div>
+              <h4 class="font-bold text-white text-xs sm:text-sm">Distance & Devotion</h4>
+              <p class="text-[11px] text-slate-400">Fights, calls, and childhood prayers</p>
+            </div>
+          </div>
+          <span id="badge-4" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">Locked 🔒</span>
+        </button>
+
+        <button id="node-5" onclick="openLevel(5)" disabled class="w-full text-left p-3.5 rounded-2xl bg-white/5 opacity-50 border border-white/5 transition-all flex items-center justify-between cursor-not-allowed">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 border border-slate-700 flex items-center justify-center font-bold text-xs">5</span>
+            <div>
+              <h4 class="font-bold text-white text-xs sm:text-sm">2026: Finally Us</h4>
+              <p class="text-[11px] text-slate-400">Turning 20 • Real couple life</p>
+            </div>
+          </div>
+          <span id="badge-5" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">Locked 🔒</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- LEVEL 1 -->
+    <section id="level-1" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
+        <span>CHAPTER 1</span>
+        <span>THE VILLAGE INTERNATIONAL SCHOOL</span>
+      </div>
+      <h3 class="font-serif-custom text-2xl font-bold text-white mb-2">The Angelic Accent</h3>
+      <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
+        I had to sit back in Grade 6 while you went into Grade 7. At assembly, with the 12th graders towering over everyone, that American voice cut through the air—and I fell right there.
+      </p>
+
+      <div class="bg-black/30 border border-white/10 rounded-2xl p-5 text-center mb-5">
+        <p class="text-[11px] font-mono text-rose-300 mb-3">Tap all 4 tall students blocking Josh's line of sight!</p>
+        <div class="relative h-36 bg-slate-900/80 rounded-xl overflow-hidden flex items-center justify-center border border-white/5">
+          <button onclick="dismissCrowd(this)" class="absolute left-4 px-2.5 py-6 bg-slate-700 text-slate-300 text-[10px] rounded-lg border border-slate-600 active:scale-95">12th Grader</button>
+          <button onclick="dismissCrowd(this)" class="absolute left-20 px-3 py-8 bg-slate-700 text-slate-300 text-[10px] rounded-lg border border-slate-600 active:scale-95">12th Grader</button>
+          <button onclick="dismissCrowd(this)" class="absolute right-20 px-3 py-7 bg-slate-700 text-slate-300 text-[10px] rounded-lg border border-slate-600 active:scale-95">12th Grader</button>
+          <button onclick="dismissCrowd(this)" class="absolute right-4 px-2.5 py-6 bg-slate-700 text-slate-300 text-[10px] rounded-lg border border-slate-600 active:scale-95">12th Grader</button>
+          <div id="gabby-revealed" class="hidden flex-col items-center">
+            <span class="text-3xl">✨ 👩🏻 ✨</span>
+            <span class="text-[11px] text-rose-300 font-bold mt-1">Gabby Spotted!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="returnToMap()" class="text-xs text-slate-400 hover:text-white">← Map</button>
+        <button id="btn-next-1" onclick="completeLevel(1)" disabled class="px-5 py-2 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed transition-all">Next Chapter →</button>
+      </div>
+    </section>
+
+    <!-- LEVEL 2 -->
+    <section id="level-2" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
+        <span>CHAPTER 2</span>
+        <span>GRADE 9 • WINNIPEG</span>
+      </div>
+      <h3 class="font-serif-custom text-2xl font-bold text-white mb-2">Finding You Again</h3>
+      <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
+        COVID pushed me back to Canada. I was growing up, losing weight, living my life—until you popped right into my head. I hunted through mutual connections and sent the message.
+      </p>
+
+      <div class="bg-black/30 border border-white/10 rounded-2xl p-5 mb-5 text-center">
+        <p class="text-[11px] font-mono text-rose-300 mb-3">Type the message that broke the silence (mention TVIS):</p>
+        <div class="relative max-w-sm mx-auto">
+          <input id="dm-input" type="text" placeholder="e.g. Hey you go to TVIS..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 font-mono" />
+          <button onclick="checkDM()" class="absolute right-1.5 top-1.5 px-3 py-1.5 bg-rose-500 hover:bg-rose-600 rounded-lg text-xs font-bold transition-colors">Send</button>
+        </div>
+        <p id="dm-feedback" class="text-[11px] mt-2 text-slate-400"></p>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="returnToMap()" class="text-xs text-slate-400 hover:text-white">← Map</button>
+        <button id="btn-next-2" onclick="completeLevel(2)" disabled class="px-5 py-2 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed transition-all">Next Chapter →</button>
+      </div>
+    </section>
+
+    <!-- LEVEL 3 -->
+    <section id="level-3" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
+        <span>CHAPTER 3</span>
+        <span>THE 3-DAY MIRACLE</span>
+      </div>
+      <h3 class="font-serif-custom text-2xl font-bold text-white mb-2">The "Situationship"</h3>
+      <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
+        The first time I ever heard the word "situationship" was from you. Then came the "it's platonic" talk. I took 3 days away, and just like that, you rose right back into my life.
+      </p>
+
+      <div class="bg-black/30 border border-white/10 rounded-2xl p-5 text-center mb-5">
+        <p class="text-[11px] font-mono text-rose-300 mb-3">Tap to count through the 3 days of heartbreak:</p>
+        <div class="flex items-center justify-center gap-3 my-4">
+          <div id="day-1-box" class="w-14 h-16 rounded-xl bg-slate-800 border border-white/10 flex flex-col items-center justify-center text-xs">
+            <span class="text-[10px] text-slate-400">Day</span><span class="font-bold text-base">1</span>
+          </div>
+          <div id="day-2-box" class="w-14 h-16 rounded-xl bg-slate-800 border border-white/10 flex flex-col items-center justify-center text-xs">
+            <span class="text-[10px] text-slate-400">Day</span><span class="font-bold text-base">2</span>
+          </div>
+          <div id="day-3-box" class="w-14 h-16 rounded-xl bg-slate-800 border border-white/10 flex flex-col items-center justify-center text-xs">
+            <span class="text-[10px] text-slate-400">Day</span><span class="font-bold text-base">3</span>
+          </div>
+        </div>
+        <button id="day-btn" onclick="tickDay()" class="px-4 py-2 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-xl font-bold text-xs hover:bg-rose-500/30">Wait 1 Day ⏳</button>
+        <p id="resurrection-text" class="text-xs text-rose-300 font-semibold mt-3 hidden">She rose again! We became official. ❤️</p>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="returnToMap()" class="text-xs text-slate-400 hover:text-white">← Map</button>
+        <button id="btn-next-3" onclick="completeLevel(3)" disabled class="px-5 py-2 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed transition-all">Next Chapter →</button>
+      </div>
+    </section>
+
+    <!-- LEVEL 4 -->
+    <section id="level-4" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
+        <span>CHAPTER 4</span>
+        <span>ACROSS THE MILES</span>
+      </div>
+      <h3 class="font-serif-custom text-2xl font-bold text-white mb-2">Manitoba ↔ Rockland County</h3>
+      <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-5">
+        Arguments, timezone gaps, bad days, and good days. Long distance tested us, but the bond refused to break.
+      </p>
+
+      <div class="bg-black/30 border border-white/10 rounded-2xl p-5 mb-5 text-center">
+        <p class="text-[11px] font-mono text-rose-300 mb-3">Tap to fill the bond meter past the distance:</p>
+        <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden border border-white/10 p-0.5 mb-4">
+          <div id="bond-bar" class="h-full bg-gradient-to-r from-rose-500 to-pink-400 rounded-full transition-all duration-150" style="width: 25%;"></div>
+        </div>
+        <button onclick="boostBond()" class="px-5 py-2.5 bg-gradient-to-r from-rose-600 to-pink-600 rounded-xl font-bold text-xs pulse-glow hover:scale-105 active:scale-95 transition-transform">
+          Hold On To Gabby ❤️
+        </button>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="returnToMap()" class="text-xs text-slate-400 hover:text-white">← Map</button>
+        <button id="btn-next-4" onclick="completeLevel(4)" disabled class="px-5 py-2 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed transition-all">Next Chapter →</button>
+      </div>
+    </section>
+
+    <!-- LEVEL 5 -->
+    <section id="level-5" class="story-transition hidden glass-card rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-3">
+        <span>FINALE</span>
+        <span>YEAR 2026 • TURNING 20</span>
+      </div>
+      <h3 class="font-serif-custom text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-300 to-amber-200 mb-3">
+        Finally Us.
+      </h3>
+
+      <div class="space-y-3 text-slate-200 text-xs sm:text-sm leading-relaxed mb-6">
+        <p>
+          2026 has been our wildest, happiest chapter. We finally got to see each other so much and just exist as a normal couple.
+        </p>
+        <p>
+          Our families are close now. Everything that kid in Kerala prayed for in church came true.
+        </p>
+      </div>
+
+      <div class="bg-gradient-to-br from-rose-950/40 to-purple-950/40 border border-rose-500/30 rounded-2xl p-5 text-center relative mb-6">
+        <div class="text-3xl mb-2">💌</div>
+        <h4 class="font-serif-custom text-lg font-bold text-rose-200 mb-1">To My Gabriela George</h4>
+        <p class="font-serif-custom italic text-slate-300 text-xs sm:text-sm max-w-md mx-auto mb-3">
+          "They say 4 years, but my heart has known you for 6. Happy Anniversary, Gabby. I love you."
+        </p>
+        <p class="text-[11px] font-mono text-rose-400">— Always, Josh Joseph</p>
+      </div>
+
+      <div class="text-center">
+        <button onclick="triggerConfetti()" class="px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl font-bold text-xs pulse-glow hover:scale-105 active:scale-95 transition-all">
+          Celebrate With Confetti 🥂🎉
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    let currentUnlockedLevel = 1;
+    let crowdCleared = 0;
+    let dayCount = 0;
+    let bondProgress = 25;
+
+    function showScreen(id) {
+      ['screen-landing', 'screen-map', 'level-1', 'level-2', 'level-3', 'level-4', 'level-5'].forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.add('hidden');
+      });
+      const target = document.getElementById(id);
+      if (target) target.classList.remove('hidden');
+    }
+
+    function startGame() {
+      playChime(650, 'sine', 0.25);
+      showScreen('screen-map');
+    }
+
+    function returnToMap() {
+      playChime(440, 'triangle', 0.15);
+      showScreen('screen-map');
+    }
+
+    function openLevel(n) {
+      if (n <= currentUnlockedLevel) {
+        playChime(580, 'sine', 0.2);
+        showScreen(`level-${n}`);
+      }
+    }
+
+    function completeLevel(n) {
+      playChime(880, 'triangle', 0.3);
+      if (n === currentUnlockedLevel && currentUnlockedLevel < 5) {
+        currentUnlockedLevel++;
+        unlockNodeUI(currentUnlockedLevel);
+      }
+      showScreen(`level-${n + 1}`);
+    }
+
+    function unlockNodeUI(lvl) {
+      document.getElementById('progress-indicator').textContent = `${lvl} / 5`;
+      const node = document.getElementById(`node-${lvl}`);
+      const badge = document.getElementById(`badge-${lvl}`);
+      if (node && badge) {
+        node.removeAttribute('disabled');
+        node.classList.remove('opacity-50', 'cursor-not-allowed');
+        node.classList.add('hover:bg-white/10');
+        badge.classList.remove('bg-slate-800', 'text-slate-400');
+        badge.classList.add('bg-rose-500/20', 'text-rose-300', 'border', 'border-rose-500/30');
+        badge.textContent = 'Play';
+      }
+    }
+
+    function dismissCrowd(btn) {
+      playChime(350 + (crowdCleared * 100), 'sine', 0.15);
+      btn.style.opacity = '0';
+      btn.style.pointerEvents = 'none';
+      crowdCleared++;
+      if (crowdCleared >= 4) {
+        document.getElementById('gabby-revealed').classList.remove('hidden');
+        const b = document.getElementById('btn-next-1');
+        b.removeAttribute('disabled');
+        b.className = "px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-xs pulse-glow transition-all";
+      }
+    }
+
+    function checkDM() {
+      const val = document.getElementById('dm-input').value.toLowerCase().trim();
+      const fb = document.getElementById('dm-feedback');
+      if (val.includes('tvis') || val.includes('village')) {
+        playChime(750, 'triangle', 0.25);
+        fb.className = "text-[11px] mt-2 text-emerald-400 font-semibold";
+        fb.textContent = "Delivered! 'OMG yes! Who is this??' ❤️";
+        const b = document.getElementById('btn-next-2');
+        b.removeAttribute('disabled');
+        b.className = "px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-xs pulse-glow transition-all";
+      } else {
+        playChime(250, 'sawtooth', 0.15);
+        fb.className = "text-[11px] mt-2 text-rose-400";
+        fb.textContent = "Include 'TVIS' in your message!";
+      }
+    }
+
+    function tickDay() {
+      dayCount++;
+      playChime(450 + (dayCount * 120), 'sine', 0.2);
+      if (dayCount <= 3) {
+        const box = document.getElementById(`day-${dayCount}-box`);
+        box.classList.remove('bg-slate-800');
+        box.classList.add('bg-rose-500', 'text-white', 'scale-105');
+      }
+      if (dayCount >= 3) {
+        document.getElementById('day-btn').classList.add('hidden');
+        document.getElementById('resurrection-text').classList.remove('hidden');
+        const b = document.getElementById('btn-next-3');
+        b.removeAttribute('disabled');
+        b.className = "px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-xs pulse-glow transition-all";
+      }
+    }
+
+    function boostBond() {
+      if (bondProgress < 100) {
+        bondProgress += 25;
+        playChime(400 + (bondProgress * 3), 'sine', 0.1);
+        document.getElementById('bond-bar').style.width = bondProgress + '%';
+      }
+      if (bondProgress >= 100) {
+        const b = document.getElementById('btn-next-4');
+        b.removeAttribute('disabled');
+        b.className = "px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-xs pulse-glow transition-all";
+      }
+    }
+
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let particles = [];
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * w;
+        this.y = h + Math.random() * 20;
+        this.speed = 0.5 + Math.random() * 0.8;
+        this.size = 2 + Math.random() * 2.5;
+        this.opacity = 0.1 + Math.random() * 0.3;
+      }
+      update() {
+        this.y -= this.speed;
+        if (this.y < -10) this.reset();
+      }
+      draw() {
+        ctx.fillStyle = `rgba(244, 63, 94, ${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 35; i++) particles.push(new Particle());
+
+    function animate() {
+      ctx.clearRect(0, 0, w, h);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    function triggerConfetti() {
+      playChime(880, 'sine', 0.3);
+      for (let i = 0; i < 60; i++) {
+        const heart = document.createElement('div');
+        heart.innerText = ['❤️', '💖', '✨', '🌹', '🥂'][Math.floor(Math.random() * 5)];
+        heart.style.position = 'fixed';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.top = '-40px';
+        heart.style.fontSize = (16 + Math.random() * 20) + 'px';
+        heart.style.zIndex = '9999';
+        heart.style.pointerEvents = 'none';
+        heart.style.transition = `all ${2 + Math.random() * 2}s cubic-bezier(0.25, 1, 0.5, 1)`;
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+          heart.style.transform = `translateY(${window.innerHeight + 80}px) rotate(${Math.random() * 360}deg)`;
+          heart.style.opacity = '0';
+        }, 50);
+
+        setTimeout(() => heart.remove(), 4000);
+      }
+    }
+  </script>
+</body>
+</html>
